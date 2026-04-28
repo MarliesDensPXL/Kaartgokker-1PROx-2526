@@ -2,6 +2,8 @@
 {
     internal class Program
     {
+
+        static Dictionary<Card, int> _pulledCards = new Dictionary<Card, int>();
         static List<Card> _cardDeck = new List<Card>()
 {
     new Card(){ Color="Rood", Name = "Harten 1" },
@@ -64,11 +66,14 @@
 
             do
             {
+                Console.Clear();
                 Console.WriteLine($"Huidige credits: {credits}");
                 int stake = GetStake(credits);
                 string chosenColor = GetCardChoice();
                 credits = PullCard(chosenColor, credits, stake);
 
+                PrintHistory();
+                Console.ReadLine();
             } while (credits > 0);
         }
 
@@ -83,24 +88,37 @@
             return stake;
         }
 
+        static Dictionary<string, string> _cardColors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "H", "rood" },
+            { "R", "rood" },
+            { "S", "zwart" },
+            { "K", "zwart" }
+        };
+
         private static string GetCardChoice()
         {
             string suit;
 
             do
             {
-                Console.Write("Kies een kleur (Harten, Ruiten, Schuppen, Klaveren): ");
+                string text = string.Join(",", _cardColors.Keys.ToList());
+                Console.Write($"Kies een kleur ({text}): ");
                 suit = Console.ReadLine()!;
-            } while (!suit.Equals("H") && !suit.Equals("R") && !suit.Equals("S") && !suit.Equals("K"));
+            } while (!_cardColors.ContainsKey(suit));
+            //} while (!suit.Equals("H") && !suit.Equals("R") && !suit.Equals("S") && !suit.Equals("K"));
 
-            if(suit.Equals("H") || suit.Equals("R"))
-            {
-                return "Rood";
-            }
-            else
-            {
-                return "Zwart";
-            }
+            //if(suit.Equals("H") || suit.Equals("R"))
+            //{
+            //    return "Rood";
+            //}
+            //else
+            //{
+            //    return "Zwart";
+            //}
+
+            string color = _cardColors[suit];
+            return color;
         }
 
         static Random _rng = new Random();
@@ -114,18 +132,32 @@
 
             Console.WriteLine($"De getrokken kaart is {randomCard.Name} ({randomCard.Color})");
 
-            if(randomCard.Color.Equals(cardChoice))
+            int result;
+            if(randomCard.Color.Equals(cardChoice, StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"U hebt {stake * 2} gewonnen.");
-                credits += stake * 2;
+                result = stake * 2;
             }
             else
             {
                 Console.WriteLine($"U hebt {stake} verloren.");
-                credits -= stake;
+                result = -stake;
             }
 
-            return credits;
+            _pulledCards.Add(randomCard, result);
+
+            return credits + result;
+        }
+
+        private static void PrintHistory()
+        {
+            Console.WriteLine("Historiek");
+            Console.WriteLine("------------------");
+            foreach(Card card in _pulledCards.Keys.ToList())
+            {
+                int result = _pulledCards[card];
+                Console.WriteLine($"{card.Name}: {result}");
+            }
         }
     }
 }

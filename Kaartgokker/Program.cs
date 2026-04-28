@@ -83,14 +83,6 @@
             return stake;
         }
 
-        static Dictionary<string, string> _cardColors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "H", "Rood" },
-                { "R", "Rood" },
-                { "S", "Zwart" },
-                { "K", "Zwart" }
-        };
-
         private static string GetCardChoice()
         {
             string suit;
@@ -127,7 +119,7 @@
 
             Console.WriteLine($"De getrokken kaart is {randomCard.Name} ({randomCard.Color})");
 
-            if(randomCard.Color.Equals(cardChoice, StringComparison.OrdinalIgnoreCase))
+            if(randomCard.Color.Equals(cardChoice))
             {
                 Console.WriteLine($"U hebt {stake * 2} gewonnen.");
                 credits += stake * 2;

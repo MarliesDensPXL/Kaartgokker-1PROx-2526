@@ -83,24 +83,37 @@
             return stake;
         }
 
+        static Dictionary<string, string> _cardColors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "H", "Rood" },
+                { "R", "Rood" },
+                { "S", "Zwart" },
+                { "K", "Zwart" }
+        };
+
         private static string GetCardChoice()
         {
             string suit;
 
             do
             {
-                Console.Write("Kies een kleur (Harten, Ruiten, Schuppen, Klaveren): ");
+                string text = string.Join(",", _cardColors.Keys.ToList()); // string.Join vraagt welke lijst je wil en wat je er wil tussenzetten, in dit geval een komma
+                Console.Write($"Kies een kleur {text}: ");
                 suit = Console.ReadLine()!;
-            } while (!suit.Equals("H") && !suit.Equals("R") && !suit.Equals("S") && !suit.Equals("K"));
+            } while (!_cardColors.ContainsKey(suit)); //zolang gebruiker iets ingeeft wat niet in de dictionary zit, moet hij opnieuw een kleur ingeven.
+            //} while (!suit.Equals("H") && !suit.Equals("R") && !suit.Equals("S") && !suit.Equals("K"));
 
-            if(suit.Equals("H") || suit.Equals("R"))
-            {
-                return "Rood";
-            }
-            else
-            {
-                return "Zwart";
-            }
+            //if(suit.Equals("H") || suit.Equals("R"))
+            //{
+            //    return "Rood";
+            //}
+            //else
+            //{
+            //    return "Zwart";
+            //}
+
+            string color = _cardColors[suit];
+            return color;
         }
 
         static Random _rng = new Random();
@@ -114,7 +127,7 @@
 
             Console.WriteLine($"De getrokken kaart is {randomCard.Name} ({randomCard.Color})");
 
-            if(randomCard.Color.Equals(cardChoice))
+            if(randomCard.Color.Equals(cardChoice, StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"U hebt {stake * 2} gewonnen.");
                 credits += stake * 2;
